@@ -1,14 +1,20 @@
 <style>
-    .main_sheet {
+    .mainSheet {
         display: grid;
         grid-template-columns: '1fr 1fr 1fr 1fr 1fr 1fr';
         grid-column-gap: 10px;
     }
+
+    .sectionHeader {
+        grid-column-end: span 6;
+        text-align: center;
+        border-bottom: 1px solid black;
+    }
 </style>
 
-<div class="main_sheet">
+<div class="mainSheet">
     <!-- Attributes -->
-    <div style="grid-column-end: span 6; text-align: center">Attributes</div>
+    <div class="sectionHeader">Attributes</div>
     <div style="grid-column-end: span 2" class="stat_type_head">Physical</div>
     <div style="grid-column-end: span 2" class="stat_type_head">Social</div>
     <div style="grid-column-end: span 2" class="stat_type_head">Mental</div>
@@ -19,7 +25,7 @@
     {{/each}}
 
     <!-- Skills -->
-    <div style="grid-column-end: span 6; text-align: center">Skills</div>
+    <div class="sectionHeader">Skills</div>
     {{#each (this.formatSkills @sheet) as |skill|}}
     <div style="grid-column-end: span 2">
         {{wod5e-dot-display name=skill.name value=skill.value }}
@@ -31,17 +37,25 @@
     {{/each}}
 
     <!-- Advantages -->
-    <div style="grid-column-end: span 6; text-align: center">Advantages</div>
+    <div class="sectionHeader">Advantages</div>
     {{#each (this.formatAdvantages @sheet) as |advantage| }}
     <div style="grid-column-end: span 3">
-
         {{wod5e-dot-display name=advantage.name value=advantage.format_value}}
         {{#each advantage.children as |child| }}
         {{wod5e-dot-display name=child.name value=advantage.value}}
         {{/each}}
-
     </div>
     {{/each}}
+
+    <!-- Perks -->
+    <div class="sectionHeader">{{{this.getPowerHeader @sheet}}}</div>
+    {{#if (eq (this.getType @sheet) 'hunter')}}
+    {{#each (this.formatEdges @sheet) as |edge| }}
+    <div style="grid-column-end: span 3">
+        {{{edge}}}
+    </div>
+    {{/each}}
+    {{/if}}
 
     {{!-- {{{@sheet}}} --}}
 </div>
