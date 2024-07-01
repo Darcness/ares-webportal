@@ -39,10 +39,7 @@
     <div class="sectionHeader">Advantages</div>
     {{#each (this.formatAdvantages @sheet) as |advantage| }}
     <div style="grid-column-end: span 3">
-        {{wod5e-dot-display name=advantage.name value=advantage.format_value}}
-        {{#each advantage.children as |child| }}
-        {{wod5e-dot-display name=child.name value=advantage.value}}
-        {{/each}}
+        {{wod5e-dot-display name=advantage.name value=advantage.value}}
     </div>
     {{/each}}
 
@@ -51,7 +48,7 @@
     {{#if (eq (this.getType @sheet) 'hunter')}}
     {{#each (this.formatEdges @sheet) as |edge| }}
     <div style="grid-column-end: span 3">
-        {{{edge}}}
+        {{{edge.name}}}
     </div>
     {{/each}}
     {{/if}}

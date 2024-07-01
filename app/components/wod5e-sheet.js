@@ -14,33 +14,46 @@ export default class WoD5eSheet extends Component {
 
     formatSkills = (data) => this.column_format(this.parse(data).skills, 3, (k, v) => ({ name: k, value: v.value, specialties: v.specialties }))
 
-    formatAdvantages = (data) => Object.values(this.parse(data).advantages).map((obj) => ({
-        ...obj,
-        format_value: obj.value + obj.secondary_value ? ` ${obj.secondary_value}` : '',
-        children: Object.values(obj.children).map((inner) => ({ ...inner, name: `  -${inner.name}` }))
-    }))
+    formatAdvantages = (data) => {
+        let advantages = [];
+
+        Object.values(this.parse(data).advantages).forEach((a) => advantages = advantages.concat([
+            this.formatAdvantage(a),
+            ...Object.values(a.children).map((c) => this.formatAdvantage(c, true))
+        ]));
+
+        return this.column_format_with_children(advantages);
+    }
+
+    formatAdvantage = (advantage, isChild) => ({
+        name: `${isChild ? '&nbsp;&nbsp;-' : ''}${advantage.name}`,
+        value: `${advantage.value}${advantage.secondary_value != 0 ? ` (${advantage.secondary_value})` : ''}`
+    })
 
     formatEdges = (data) => {
-        let sheet = this.parse(data);
         let edges = []
 
-        Object.entries(sheet.edges).forEach((e) => edges = edges.concat([e[0], ...e[1].map((p) => `&nbsp;&nbsp;-${p}`)]));
+        Object.entries(this.parse(data).edges).forEach((e) => edges = edges.concat([{ name: e[0] }, ...e[1].map((p) => ({ name: `&nbsp;&nbsp;-${p}` }))]));
 
-        let midpoint = Math.floor(edges.length / 2) + (edges.length % 2)
+        return this.column_format_with_children(edges);
+    }
+
+    column_format_with_children = (items) => {
+        let midpoint = Math.floor(items.length / 2) + (items.length % 2)
 
         // We want to keep sub-objects in the same column as their parent.
         // If the first item in the second column is a sub-object (starts with a space),
         // push forward until we find a main-line item.
 
-        while (midpoint > 0 && midpoint < edges.length && edges[midpoint].startsWith('&nbsp;')) {
+        while (midpoint > 0 && midpoint < items.length && items[midpoint].name.startsWith('&nbsp;')) {
             midpoint++;
         }
 
         let values = []
 
         for (let row = 0; row < midpoint; row++) {
-            values.push(edges[row]);
-            values.push(edges[row + midpoint] ?? '');
+            values.push(items[row]);
+            values.push(items[row + midpoint] ?? '');
         }
 
         return values;
