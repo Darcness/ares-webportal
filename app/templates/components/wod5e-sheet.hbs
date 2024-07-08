@@ -6,29 +6,38 @@
     }
 
     .sectionHeader {
-        grid-column-end: span 6;
+        grid-column: 1/ span 6;
         text-align: center;
         border-bottom: 1px solid black;
     }
 </style>
 
-<div class="mainSheet">
+<div class="mainSheet" ...attributes>
+    <!-- Info -->
+
+    <!-- Trackers -->
+    <div class="sectionHeader">Trackers</div>
+    {{#each this.trackerBoxes as |trackerBox|}}
+    <div style="grid-column-end: span 3">
+        {{{trackerBox}}}
+    </div>
+    {{/each}}
     <!-- Attributes -->
     <div class="sectionHeader">Attributes</div>
     <div style="grid-column-end: span 2" class="stat_type_head">Physical</div>
     <div style="grid-column-end: span 2" class="stat_type_head">Social</div>
     <div style="grid-column-end: span 2" class="stat_type_head">Mental</div>
-    {{#each (this.formatAttribs @sheet) as |attrib|}}
+    {{#each this.attributes as |attrib|}}
     <div style="grid-column-end: span 2">
-        {{wod5e-dot-display name=attrib.name value = attrib.value }}
+        {{wod5e-dot-display data=attrib}}
     </div>
     {{/each}}
 
     <!-- Skills -->
     <div class="sectionHeader">Skills</div>
-    {{#each (this.formatSkills @sheet) as |skill|}}
+    {{#each this.skills as |skill|}}
     <div style="grid-column-end: span 2">
-        {{wod5e-dot-display name=skill.name value=skill.value }}
+        {{wod5e-dot-display data=skill}}
         {{#each skill.specialties as |spec|}}
         <div>&nbsp;&nbsp;-{{{spec}}}</div>
         {{/each}}
@@ -37,21 +46,23 @@
 
     <!-- Advantages -->
     <div class="sectionHeader">Advantages</div>
-    {{#each (this.formatAdvantages @sheet) as |advantage| }}
+    {{#each this.advantages as |advantage|}}
     <div style="grid-column-end: span 3">
-        {{wod5e-dot-display name=advantage.name value=advantage.value}}
+        <div style="display: grid; grid-template-columns: 1fr 1fr">
+            <div>{{{advantage.name}}}</div>
+            <div style="text-align: right">{{{advantage.value}}}</div>
+        </div>
     </div>
     {{/each}}
 
     <!-- Perks -->
-    <div class="sectionHeader">{{{this.getPowerHeader @sheet}}}</div>
-    {{#if (eq (this.getType @sheet) 'hunter')}}
-    {{#each (this.formatEdges @sheet) as |edge| }}
+    <div class="sectionHeader">{{{@sheet.powers_title}}}</div>
+    {{#if (eq @sheet.type 'hunter')}}
+    {{#each this.edges as |edge|}}
     <div style="grid-column-end: span 3">
         {{{edge.name}}}
     </div>
     {{/each}}
     {{/if}}
-
-    {{!-- {{{@sheet}}} --}}
+    
 </div>

@@ -1,23 +1,22 @@
-import Component from '@ember/component';
+import Component from '@glimmer/component';
 
 export default class WoD5eSheet extends Component {
 
-    shouldShow = (data) => !!data;
+    parse = (data) => JSON.stringify(data);
 
-    parse = (data) => JSON.parse(data);
+    get attributes() {
+        return this.column_format(this.args.sheet.attribs, 3, (k, v) => ({ name: k, value: v }));
+    }
 
-    getType = (data) => JSON.parse(data).type;
+    get skills() {
+        return this.column_format(this.args.sheet.skills, 3, (k, v) => ({ name: k, value: v.value, specialties: v.specialties }));
+    }
 
-    getPowerHeader = (data) => JSON.parse(data).powers_title;
 
-    formatAttribs = (data) => this.column_format(this.parse(data).attribs, 3, (k, v) => ({ name: k, value: v }))
-
-    formatSkills = (data) => this.column_format(this.parse(data).skills, 3, (k, v) => ({ name: k, value: v.value, specialties: v.specialties }))
-
-    formatAdvantages = (data) => {
+    get advantages() {
         let advantages = [];
 
-        Object.values(this.parse(data).advantages).forEach((a) => advantages = advantages.concat([
+        Object.values(this.args.sheet.advantages).forEach((a) => advantages = advantages.concat([
             this.formatAdvantage(a),
             ...Object.values(a.children).map((c) => this.formatAdvantage(c, true))
         ]));
@@ -30,12 +29,27 @@ export default class WoD5eSheet extends Component {
         value: `${advantage.value}${advantage.secondary_value != 0 ? ` (${advantage.secondary_value})` : ''}`
     })
 
-    formatEdges = (data) => {
+    get edges() {
         let edges = []
 
-        Object.entries(this.parse(data).edges).forEach((e) => edges = edges.concat([{ name: e[0] }, ...e[1].map((p) => ({ name: `&nbsp;&nbsp;-${p}` }))]));
+        Object.entries(this.args.sheet.edges).forEach((e) => edges = edges.concat([{ name: e[0] }, ...e[1].map((p) => ({ name: `&nbsp;&nbsp;-${p}` }))]));
 
         return this.column_format_with_children(edges);
+    }
+
+
+    get trackerBoxes() {
+        return Object.entries(this.args.sheet.trackers).map((value) => {
+            let name = value[0];
+            let tracker = value[1];
+            name = name[0].toUpperCase() + name.slice(1);
+
+            let trackerBox = Array(tracker.max).fill(0)
+                .map((_, i) => `[${tracker.agg > i ? 'X' : (tracker.agg + tracker.superficial) > i ? '/' : ' '}]`)
+                .join('');
+
+            return `${name}: ${trackerBox}`
+        })
     }
 
     column_format_with_children = (items) => {
@@ -62,9 +76,9 @@ export default class WoD5eSheet extends Component {
     column_format = (items, columnCount, format) => {
         let val = []
 
-        Object.entries(items).forEach((pair, i) => {
-            let size = Math.floor(Object.keys(items).length / columnCount);
-            let pos = (i % size) * size + Math.floor(i / size)
+        Object.entries(items).forEach((pair, i, entries) => {
+            let size = Math.floor(entries.length / columnCount); // 10
+            let pos = (i % size) * columnCount + Math.floor(i / size)
             val[pos] = format(pair[0], pair[1]);
         })
 
