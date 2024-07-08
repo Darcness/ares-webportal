@@ -1,17 +1,14 @@
 import Component from '@glimmer/component';
 
-export default class WoD5eSheet extends Component {
+export default class Wod5eSheet extends Component {
 
     parse = (data) => JSON.stringify(data);
 
-    get attributes() {
-        return this.column_format(this.args.sheet.attribs, 3, (k, v) => ({ name: k, value: v }));
-    }
+    get info() { return Object.entries(this.args.sheet.info).map((k) => ({ name: k[0], value: k[1] })); D }
 
-    get skills() {
-        return this.column_format(this.args.sheet.skills, 3, (k, v) => ({ name: k, value: v.value, specialties: v.specialties }));
-    }
+    get attributes() { return this.column_format(this.args.sheet.attribs, 3, (k, v) => ({ name: k, value: v })); }
 
+    get skills() { return this.column_format(this.args.sheet.skills, 3, (k, v) => ({ name: k, value: v.value, specialties: v.specialties })); }
 
     get advantages() {
         let advantages = [];
@@ -34,6 +31,7 @@ export default class WoD5eSheet extends Component {
 
         Object.entries(this.args.sheet.edges).forEach((e) => edges = edges.concat([{ name: e[0] }, ...e[1].map((p) => ({ name: `&nbsp;&nbsp;-${p}` }))]));
 
+        edges = edges.map((e) => ({ ...e, value: '' }))
         return this.column_format_with_children(edges);
     }
 

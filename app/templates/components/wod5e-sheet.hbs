@@ -14,11 +14,16 @@
 
 <div class="mainSheet" ...attributes>
     <!-- Info -->
+    {{#each this.info as |info|}}
+    <div class="info_container" style="grid-column-end: span 2">
+        <Wod5eStat @data={{info}} />
+    </div>
+    {{/each}}
 
     <!-- Trackers -->
     <div class="sectionHeader">Trackers</div>
     {{#each this.trackerBoxes as |trackerBox|}}
-    <div style="grid-column-end: span 3">
+    <div style="tracker_container" style="grid-column-end: span 3">
         {{{trackerBox}}}
     </div>
     {{/each}}
@@ -28,18 +33,18 @@
     <div style="grid-column-end: span 2" class="stat_type_head">Social</div>
     <div style="grid-column-end: span 2" class="stat_type_head">Mental</div>
     {{#each this.attributes as |attrib|}}
-    <div style="grid-column-end: span 2">
-        {{wod5e-dot-display data=attrib}}
+    <div class="attributes_container" style="grid-column-end: span 2">
+        <Wod5eDot @data={{attrib}} />
     </div>
     {{/each}}
 
     <!-- Skills -->
     <div class="sectionHeader">Skills</div>
     {{#each this.skills as |skill|}}
-    <div style="grid-column-end: span 2">
-        {{wod5e-dot-display data=skill}}
+    <div class="skill_container" style="grid-column-end: span 2">
+        <Wod5eDot @data={{skill}} />
         {{#each skill.specialties as |spec|}}
-        <div>&nbsp;&nbsp;-{{{spec}}}</div>
+        <div style="spec_item">&nbsp;&nbsp;-{{{spec}}}</div>
         {{/each}}
     </div>
     {{/each}}
@@ -47,11 +52,8 @@
     <!-- Advantages -->
     <div class="sectionHeader">Advantages</div>
     {{#each this.advantages as |advantage|}}
-    <div style="grid-column-end: span 3">
-        <div style="display: grid; grid-template-columns: 1fr 1fr">
-            <div>{{{advantage.name}}}</div>
-            <div style="text-align: right">{{{advantage.value}}}</div>
-        </div>
+    <div class="advantage_container" style="grid-column-end: span 3">
+        <Wod5eStat @data={{advantage}} />
     </div>
     {{/each}}
 
@@ -59,8 +61,8 @@
     <div class="sectionHeader">{{{@sheet.powers_title}}}</div>
     {{#if (eq @sheet.type 'hunter')}}
     {{#each this.edges as |edge|}}
-    <div style="grid-column-end: span 3">
-        {{{edge.name}}}
+    <div class="edge_container" style="grid-column-end: span 3">
+        <Wod5eStat @data={{edge}} />
     </div>
     {{/each}}
     {{/if}}
