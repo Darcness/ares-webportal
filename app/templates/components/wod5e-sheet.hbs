@@ -10,6 +10,28 @@
         text-align: center;
         border-bottom: 1px solid black;
     }
+
+    .trackerBox {
+        border: 2px solid black;
+        padding: 0px;
+        height: 18px;
+        width: 18px;
+    }
+
+    .trackerBox.agg {
+        background: linear-gradient(135deg, transparent 0 45%, black 45% 55%, transparent 55% 100%), 
+        linear-gradient(45deg, transparent 0 45%, black 45% 55%, transparent 55% 100%);
+    }
+
+    .trackerBox.superficial {
+        background: linear-gradient(135deg, transparent 0 45%, black 45% 55%, transparent 55% 100%);
+    }
+
+    .trackerBoxContainer {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
 </style>
 
 <div class="mainSheet" ...attributes>
@@ -22,9 +44,9 @@
 
     <!-- Trackers -->
     <div class="sectionHeader">Trackers</div>
-    {{#each this.trackerBoxes as |trackerBox|}}
+    {{#each this.trackers as |tracker|}}
     <div style="tracker_container" style="grid-column-end: span 3">
-        {{{trackerBox}}}
+        <Wod5eTracker @data={{tracker}} />
     </div>
     {{/each}}
     <!-- Attributes -->
@@ -57,7 +79,7 @@
     </div>
     {{/each}}
 
-    <!-- Perks -->
+    <!-- Powers -->
     <div class="sectionHeader">{{{@sheet.powers_title}}}</div>
     {{#if (eq @sheet.type 'hunter')}}
     {{#each this.edges as |edge|}}

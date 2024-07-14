@@ -6,9 +6,9 @@ export default class Wod5eSheet extends Component {
 
     get info() { return Object.entries(this.args.sheet.info).map((k) => ({ name: k[0], value: k[1] })); D }
 
-    get attributes() { return this.column_format(this.args.sheet.attribs, 3, (k, v) => ({ name: k, value: v })); }
+    get attributes() { return this.column_format(this.args.sheet.attribs, 3, (k, v) => ({ name: k, value: v.value, max: v.max })); }
 
-    get skills() { return this.column_format(this.args.sheet.skills, 3, (k, v) => ({ name: k, value: v.value, specialties: v.specialties })); }
+    get skills() { return this.column_format(this.args.sheet.skills, 3, (k, v) => ({ name: k, value: v.value, max: v.max, specialties: v.specialties })); }
 
     get advantages() {
         let advantages = [];
@@ -35,12 +35,15 @@ export default class Wod5eSheet extends Component {
         return this.column_format_with_children(edges);
     }
 
+    get trackers() {
+        return Object.entries(this.args.sheet.trackers).map((value) => ({ ...value[1], name: value[0] }));
+    }
+
 
     get trackerBoxes() {
         return Object.entries(this.args.sheet.trackers).map((value) => {
             let name = value[0];
             let tracker = value[1];
-            name = name[0].toUpperCase() + name.slice(1);
 
             let trackerBox = Array(tracker.max).fill(0)
                 .map((_, i) => `[${tracker.agg > i ? 'X' : (tracker.agg + tracker.superficial) > i ? '/' : ' '}]`)
@@ -75,7 +78,7 @@ export default class Wod5eSheet extends Component {
         let val = []
 
         Object.entries(items).forEach((pair, i, entries) => {
-            let size = Math.floor(entries.length / columnCount); // 10
+            let size = Math.floor(entries.length / columnCount);
             let pos = (i % size) * columnCount + Math.floor(i / size)
             val[pos] = format(pair[0], pair[1]);
         })
